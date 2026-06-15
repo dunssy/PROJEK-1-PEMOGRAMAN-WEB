@@ -85,7 +85,8 @@ if (isset($_POST['registrasi'])) {
 
     <!-- Judul halaman -->
     <title>Registrasi - Mey Salon</title>
-
+    <!-- fav ico -->
+    <link rel="icon" href="layout/images/favicon_io/favicon.ico" type="image/x-icon" />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
