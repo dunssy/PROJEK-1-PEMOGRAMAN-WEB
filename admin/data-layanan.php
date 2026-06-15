@@ -5,14 +5,13 @@ $page_title = "Data Layanan";
 // Mengatur sub judul halaman
 $sub_title = "Data Layanan";
 
-// Memanggil layout dan koneksi
-include "../layout/header.php";
+// Koneksi DULU sebelum include header agar header() bisa dipakai
 include "../config/app.php";
 
 // Menggunakan koneksi database
 global $koneksi;
 
-// Menghapus layanan berdasarkan request POST
+// Menghapus layanan berdasarkan request POST (HARUS sebelum ada output HTML)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus'])) {
     $id_layanan = (int) $_POST['hapus'];
 
@@ -25,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus'])) {
         $error_message = "Gagal menghapus layanan.";
     }
 }
+
+// Baru include header setelah proses redirect selesai
+include "../layout/header.php";
 
 // Mengatur jumlah data per halaman
 $jumlah_per_halaman = 5;
@@ -246,8 +248,6 @@ $no = (($halaman_aktif - 1) * $jumlah_per_halaman) + 1;
                                                 <!-- Tombol sebelumnya -->
                                                 <?php if ($halaman_aktif > 1) : ?>
                                                     <a 
-                                                        href="?halaman=<?= $halaman_aktif - 1; ?>" 
-                                                        class="px-3 py-1.5 text-xs font-medium bg-white border border-[#EAD8D0] rounded-lg text-[#6F5E64] hover:bg-[#FDEAF1] hover:text-[#C75C7A] transition-colors"
                                                         href="?halaman=<?= $halaman_aktif - 1; ?><?= $cari_param; ?>" 
                                                         class="px-3 py-1.5 text-xs font-medium bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-pink-600 transition-colors"
                                                     >
@@ -262,8 +262,6 @@ $no = (($halaman_aktif - 1) * $jumlah_per_halaman) + 1;
                                                 <!-- Nomor halaman -->
                                                 <?php for ($i = 1; $i <= $total_halaman; $i++) : ?>
                                                     <a 
-                                                        href="?halaman=<?= $i; ?>" 
-                                                        class="px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors <?= $i === $halaman_aktif ? 'bg-[#C75C7A] border-[#C75C7A] text-white' : 'bg-white border-[#EAD8D0] text-[#6F5E64] hover:bg-[#FDEAF1] hover:text-[#C75C7A]'; ?>"
                                                         href="?halaman=<?= $i; ?><?= $cari_param; ?>" 
                                                         class="px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors <?= $i === $halaman_aktif ? 'bg-pink-600 border-pink-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:bg-pink-50 hover:text-pink-600'; ?>"
                                                     >
@@ -274,8 +272,6 @@ $no = (($halaman_aktif - 1) * $jumlah_per_halaman) + 1;
                                                 <!-- Tombol berikutnya -->
                                                 <?php if ($halaman_aktif < $total_halaman) : ?> 
                                                     <a 
-                                                        href="?halaman=<?= $halaman_aktif + 1; ?>" 
-                                                        class="px-3 py-1.5 text-xs font-medium bg-white border border-[#EAD8D0] rounded-lg text-[#6F5E64] hover:bg-[#FDEAF1] hover:text-[#C75C7A] transition-colors"
                                                         href="?halaman=<?= $halaman_aktif + 1; ?><?= $cari_param; ?>" 
                                                         class="px-3 py-1.5 text-xs font-medium bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-pink-600 transition-colors"
                                                     >
@@ -309,7 +305,7 @@ const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('status') === 'success') {
     Swal.fire({
         title: "Terhapus!",
-        text: "berhasil dihapus.".$data_layanan['nama_layanan'],
+        text: "Data layanan berhasil dihapus.",
         icon: "success",
         confirmButtonColor: "#C75C7A"
     });

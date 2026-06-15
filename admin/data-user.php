@@ -2,14 +2,13 @@
 // Mengatur judul halaman
 $page_title = "Data User";
 
-// Memanggil layout dan koneksi
-include "../layout/header.php";
+// Koneksi DULU sebelum include header agar header() bisa dipakai
 include "../config/app.php";
 
 // Menggunakan koneksi database
 global $koneksi;
 
-// Menghapus user berdasarkan request POST
+// Menghapus user berdasarkan request POST (HARUS sebelum ada output HTML)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus'])) {
     $id_user = (int) $_POST['hapus'];
 
@@ -22,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus'])) {
         $error_message = "Gagal menghapus user.";
     }
 }
+
+// Baru include header setelah proses redirect selesai
+include "../layout/header.php";
 
 
 // Mengatur jumlah data per halaman
@@ -192,12 +194,11 @@ $no = (($halaman_aktif - 1) * $jumlah_per_halaman) + 1;
                                                         </a>
 
                                                         <!-- Tombol hapus -->
-                                                        <form action="" method="POST" class="inline">
+                                                        <form method="POST" class="inline">
+                                                            <input type="hidden" name="hapus" value="<?= (int) $data_user['id_user']; ?>">
                                                             <button 
-                                                                type="submit" 
-                                                                name="hapus" 
-                                                                value="<?= $data_user['id_user']; ?>" 
-                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?');"
+                                                                type="button" 
+                                                                onclick="confirmDelete(this);"
                                                                 class="inline-flex items-center justify-center w-8 h-8 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition"
                                                                 title="Hapus"
                                                             >
@@ -285,6 +286,42 @@ $no = (($halaman_aktif - 1) * $jumlah_per_halaman) + 1;
             <?php include "../layout/footer-component.php"; ?>
         </main>
     </div>
+
+<script>
+    // Menampilkan alert success setelah hapus user
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('status') === 'success') {
+        Swal.fire({
+            title: "Terhapus!",
+            text: "Data user berhasil dihapus.",
+            icon: "success",
+            confirmButtonColor: "#C75C7A"
+        });
+
+        // Menghapus parameter status dari URL agar alert tidak muncul berulang
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Fungsi untuk konfirmasi hapus dengan SweetAlert2
+    function confirmDelete(button) {
+        Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "Anda tidak akan bisa mengembalikan user yang telah dihapus!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#dc2626",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Ya, hapus user!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit form jika user confirm
+                button.closest('form').submit();
+            }
+        });
+    }
+</script>
 
 <?php
 // Memanggil footer utama

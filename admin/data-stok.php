@@ -5,14 +5,13 @@ $page_title = "Data Stok Barang";
 // Mengatur sub judul halaman
 $sub_title = "Data Stok Barang";
 
-// Memanggil layout dan koneksi
-include "../layout/header.php";
+// Koneksi DULU sebelum include header agar header() bisa dipakai
 include "../config/app.php";
 
 // Menggunakan koneksi database
 global $koneksi;
 
-// Menghapus barang berdasarkan request POST
+// Menghapus barang berdasarkan request POST (HARUS sebelum ada output HTML)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus'])) {
     $id_barang = (int) $_POST['hapus'];
 
@@ -25,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus'])) {
         $error_message = "Gagal menghapus barang.";
     }
 }
+
+// Baru include header setelah proses redirect selesai
+include "../layout/header.php";
 
 // Mengatur jumlah data per halaman
 $jumlah_per_halaman = 5;
@@ -228,11 +230,10 @@ $no = (($halaman_aktif - 1) * $jumlah_per_halaman) + 1;
 
                                                         <!-- Tombol hapus -->
                                                         <form method="POST" class="inline">
+                                                            <input type="hidden" name="hapus" value="<?= (int) $data_barang['id_barang']; ?>">
                                                             <button 
-                                                                type="submit" 
-                                                                name="hapus" 
-                                                                value="<?= (int) $data_barang['id_barang']; ?>" 
-                                                                onclick="confirmDelete(event);" 
+                                                                type="button" 
+                                                                onclick="confirmDelete(this);" 
                                                                 class="inline-flex items-center justify-center w-8 h-8 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition"
                                                                 title="Hapus"
                                                             >
@@ -322,7 +323,7 @@ $no = (($halaman_aktif - 1) * $jumlah_per_halaman) + 1;
     if (urlParams.get('status') === 'success') {
         Swal.fire({
             title: "Terhapus!",
-            text: "berhasil dihapus".$data_barang['nama_barang'],
+            text: "Data barang berhasil dihapus.",
             icon: "success",
             confirmButtonColor: "#C75C7A"
         });
